@@ -113,6 +113,12 @@ conference_column = updated_dataset.pop("Conference")
 updated_dataset.insert(1, "Conference", conference_column)
 
 
+# delete the Unnamed: 0 column
+updated_dataset = updated_dataset.drop(columns=["Unnamed: 0"])  
+
+# delete the TEAM_ID column
+updated_dataset = updated_dataset.drop(columns=["TEAM_ID"])
+
 
 updated_dataset.to_csv("updated_dataset.csv", index=False)
 
