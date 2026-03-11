@@ -1,5 +1,7 @@
 # NBA Western Conference Dominance Analysis
 
+Python | pandas | NumPy | Data Analysis | Machine Learning | Sports Analytics
+
 ## Table of Contents
 
 - [Project Goal](#project-goal)
@@ -33,11 +35,11 @@ The original dataset did not include a **Season** or a **Conference** column, so
 Other preprocessing steps included: 
 
 - Creating a **Season** column
-- Assigning each team to it's **Conference** using a dictionary of team-conference mappings
+- Assigning each team to its **Conference** using a dictionary of team-conference mappings
 - Handling inconsistencies in team names due to franchise name changes
 - Accounting for the NBA expansion from **29 to 30 teams in 2005**
 
-The dataset was preprocessed using **Python and Pandas**
+The dataset was preprocessed using **Python and pandas**
 
 
 
@@ -67,7 +69,7 @@ README.md
 .gitignore
 ```
 
-
+## Dataset Columns:
 
 Explanation of each column in the dataset:
 
