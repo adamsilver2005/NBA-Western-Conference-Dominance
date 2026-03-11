@@ -1,12 +1,72 @@
-# NBA Western Conference Dominance Analysis 
+# NBA Western Conference Dominance Analysis
 
-This Project analyzes NBA team statistics from the 1996-97 season to the 2022-23 season.
+## Table of Contents
 
-The dataset used for this project was sourced from Kaggle: (https://www.kaggle.com/datasets/mamadoudiallo/nba-team-stats?resource=download)
+- [Project Goal](#project-goal)
+- [Dataset](#dataset)
+- [Project Structure](#project-structure)
+- [Dataset Columns](#dataset-columns)
+- [Exploratory Data Analysis](#exploratory-data-analysis)
+- [Statistical Testing](#statistical-testing)
+- [Predictive Modeling](#predictive-modeling)
 
-This data set has been altered in the fact that I have added a column for the season (which was not included in the original dataset), and I have also added a column for the conference (which was not included in the original dataset). There are quite a few inconsistences with team names (since they have changed a bit throughout the years), and also the NBA expanded from 29 to 30 teams in 2005, so I used a dictionary for the team names to add the conference column. 
 
-I used python to build the data set using the package "pandas".
+## Project Goal
+
+For years, NBA fans and analysts have argued that the Western Conference has historically been stronger than the Eastern Conference. This project investigates that claim by analyzing team statistics from the 1996-97 season to the 2022-23 season and comparing performance metrics between conferences. 
+
+The analysis will include:
+
+- Exploratory Data Analysis (EDA)
+- Statistical comparisons between conferences
+- Visualization of these comparisons over the multiple seasons
+- Predictive modeling of team success
+
+
+## Dataset
+
+The dataset used for this project was sourced from Kaggle: 
+(https://www.kaggle.com/datasets/mamadoudiallo/nba-team-stats?resource=download)
+
+The original dataset did not include a **Season** or a **Conference** column, so these were added during data preprocessing. 
+
+Other preprocessing steps included: 
+
+- Creating a **Season** column
+- Assigning each team to it's **Conference** using a dictionary of team-conference mappings
+- Handling inconsistencies in team names due to franchise name changes
+- Accounting for the NBA expansion from **29 to 30 teams in 2005**
+
+The dataset was preprocessed using **Python and Pandas**
+
+
+
+## Project Structure
+
+```
+nba-western-conference-analysis/
+
+data/
+    raw/                # original Kaggle dataset
+        nba_team_stats.csv
+    processed/          # cleaned dataset used for analysis
+        updated_dataset.csv
+
+analysis/
+    exploratory_data_analysis.py              # exploratory data analysis
+    hypothesis_testing.py
+    predictive_modeling.py
+
+scripts/
+    build_dataset.py    # script used to clean and prepare dataset
+
+images/
+    # visualizations created during analysis
+
+README.md
+.gitignore
+```
+
 
 
 Explanation of each column in the dataset:
