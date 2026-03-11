@@ -130,10 +130,64 @@ Explanation of each column in the dataset:
 
 ## Exploratory Data Analysis
 
+Exploratory data analysis was performed to understand the distribution of team statistics and compare performance between conferences.
+
+The key questions that were explored include:
+
+- Do Western Conference teams have higher average win percentages?
+- How has conference performance changed over time?
+- Which statistics are most strongly associated with winning?
+
+Several visualizations were created to investigate these questions.
 
 
 ### Win Percentage by Conference
 
 ![Win Percentage Boxplot](images/win_pct_boxplot.png)
 
-This visualization compares the distribution of team win percentages between the Eastern and Western Conferences. Preliminary analysis suggests that Western Conference teams tend to have slightly higher average win percentages.
+These boxplots compare the distribution of team win percentages between the Eastern and Western Conferences. We can see that there is a small discrepancy between the boxplots, where the Western Conference teams tend to have slightly higher median win percentage, as well as higher Q1 and Q3 values.
+
+
+### Average Statistics by Conference
+
+The table below shows the average values of several key performance metrics for teams in each conference across all seasons in the dataset.
+
+| Conference | W_PCT | PLUS_MINUS | PTS | REB | AST |
+|------------|------|-----------|------|------|------|
+| East | 0.483 | -0.496 | 99.70 | 42.35 | 21.95 |
+| West | 0.517 | 0.490 | 102.16 | 42.85 | 22.61 |
+
+These averages suggest that Western Conference teams tend to have slightly higher win percentages, score more points per game, and have a positive average point differential compared to Eastern Conference teams.
+
+
+
+
+## How to Run the Project
+
+Clone the repository:
+
+```
+git clone https://github.com/YOUR_USERNAME/nba-western-conference-analysis.git
+```
+
+Install dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+Run the exploratory data analysis:
+
+```
+python analysis/eda.py
+```
+
+
+## Tools and Libraries
+
+- Python
+- pandas
+- NumPy
+- matplotlib
+- seaborn
+- scikit-learn
