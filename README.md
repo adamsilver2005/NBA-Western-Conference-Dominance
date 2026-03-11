@@ -9,6 +9,7 @@ Python | pandas | NumPy | Data Analysis | Machine Learning | Sports Analytics
 - [Project Structure](#project-structure)
 - [Dataset Columns](#dataset-columns)
 - [Exploratory Data Analysis](#exploratory-data-analysis)
+- [How to Run the Project](#how-to-run-the-project)
 - [Statistical Testing](#statistical-testing)
 - [Predictive Modeling](#predictive-modeling)
 
@@ -158,6 +159,9 @@ The table below shows the average values of several key performance metrics for 
 | West | 0.517 | 0.490 | 102.16 | 42.85 | 22.61 |
 
 These averages suggest that Western Conference teams tend to have slightly higher win percentages, score more points per game, and have a positive average point differential compared to Eastern Conference teams.
+
+This initial comparison provides evidence that Western Conference teams may perform slightly better on average, motivating further statistical testing in later sections of the analysis.
+
 
 
 
