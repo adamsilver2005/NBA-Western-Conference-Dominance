@@ -125,3 +125,15 @@ Explanation of each column in the dataset:
 | AST_RANK | Rank in assists |
 | TOV_RANK | Rank in turnovers |
 | STL_RANK | Rank in steals
+
+
+
+## Exploratory Data Analysis
+
+
+
+### Win Percentage by Conference
+
+![Win Percentage Boxplot](images/win_pct_boxplot.png)
+
+This visualization compares the distribution of team win percentages between the Eastern and Western Conferences. Preliminary analysis suggests that Western Conference teams tend to have slightly higher average win percentages.
