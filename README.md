@@ -56,7 +56,7 @@ data/
         updated_dataset.csv
 
 analysis/
-    exploratory_data_analysis.py              # exploratory data analysis
+    exploratory_data_analysis.py             
     hypothesis_testing.py
     predictive_modeling.py
 
