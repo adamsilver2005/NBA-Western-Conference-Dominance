@@ -164,10 +164,24 @@ This initial comparison provides evidence that Western Conference teams may perf
 
 
 
-### Win Percentage Over Time by Conference
+### Average Conference Win Percentage Over Time
 
 ![Win Percentage Over Time](images/win_pct_trend_over_time.png)
 
+
+This visualization shows the average team win percentage for the Eastern and Western Conferences for each NBA season in the dataset. Across most seasons, the Western Conference maintains a higher average win percentage than the Eastern Conference, suggesting stronger overall team performance in the West. The gap is particularly noticeable during the early 2000s and mid-2010s, where Western teams consistently outperform Eastern teams.
+
+In more recent seasons, the difference between conferences appears to narrow, indicating that the competitive balance between the two conferences may be becoming more even. In the early 2020's, the Eastern Conference has overtaken the Western Conference in win percentage, potentially suggesting that we are seeing a shift in dominance in conferences. 
+
+
+
+### Point Differential Distribution by Conference
+
+![Point Differential Distribution](images/point_differential_distribution.png)
+
+This histogram compares the distribution of team point differentials (PLUS_MINUS) between the Eastern and Western Conferences. Point differential measures the average margin by which a team outscores its opponents and is often considered one of the strongest indicators of overall team strength.
+
+The distribution for Western Conference teams is slightly shifted to the right compared to the Eastern Conference, indicating that Western teams tend to have slightly higher average point differentials. This suggests that, across seasons, Western Conference teams have generally outscored their opponents by larger margins than Eastern Conference teams.
 
 
 ## How to Run the Project

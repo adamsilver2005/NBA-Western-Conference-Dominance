@@ -83,7 +83,6 @@ plt.show()
 season_conf = data.groupby(["Season", "Conference"])["W_PCT"].mean().reset_index()
 
 
-
 plt.figure(figsize=(12,6))
 
 sns.lineplot(
@@ -97,5 +96,25 @@ plt.xticks(rotation = 90)
 
 plt.title("Average Conference Win Percentage Over Time")
 
+
+plt.show()
+
+
+
+
+
+# distribution of point differential
+
+plt.figure(figsize=(8,5))
+
+sns.histplot(
+    data = data, 
+    x = "PLUS_MINUS",
+    hue = "Conference", 
+    bins = 30,
+    kde = True
+)
+
+plt.title("Point Differential Distribution")
 
 plt.show()
