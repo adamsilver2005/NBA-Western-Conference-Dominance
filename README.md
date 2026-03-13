@@ -219,11 +219,13 @@ Among these variables, point differential (PLUS_MINUS) shows the strongest relat
 
 
 
+
 ### Scatter Plot of Point Differential vs Win Percentage 
 
 ![Scatter Plot of Point Differential vs Win Percentage](images/plus_minus_vs_win_pct.png)
 
 This scatter plot shows the relationship between team point differential (PLUS_MINUS) and win percentage (W_PCT) across NBA teams. Each point represents a team-season, with colors distinguishing teams from the Eastern and Western Conferences. The visualization reveals a strong positive relationship between point differential and win percentage. Teams that outscore their opponents by larger margins tend  to have higher win percentages. This relationship appears consisten across both conferences, indicating that point differential is a strong indicator of team performance. While both conferences follow the same overall trend, Western Conference teams appear slightly more concentrated in the higher point differential and win percentage range (top right) in several seasons, supporting the hypothesis that the Western Conference has historically been stronger.
+
 
 
 ## How to Run the Project
