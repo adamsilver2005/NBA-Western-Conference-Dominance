@@ -184,6 +184,22 @@ This histogram compares the distribution of team point differentials (PLUS_MINUS
 The distribution for Western Conference teams is slightly shifted to the right compared to the Eastern Conference, indicating that Western teams tend to have slightly higher average point differentials. This suggests that, across seasons, Western Conference teams have generally outscored their opponents by larger margins than Eastern Conference teams.
 
 
+
+
+### Correlation Heatmap of Team Statistics
+
+![Correlation Heatmap](images/correlation_heatmap.png)
+
+This heatmap visualizes the correlation between all numerical variables in the dataset. Correlation values range from **-1 to 1**, where values closer to **1 indicate strong positive relationships**, values closer to **-1 indicate strong negative relationships**, and values near **0 indicate weak or no linear relationship**.
+
+Several strong relationships appear in the dataset. As expected, **wins (W) and win percentage (W_PCT)** show a near-perfect positive correlation. Additionally, **point differential (PLUS_MINUS)** has a strong positive correlation with both wins and win percentage, indicating that teams that outscore their opponents by larger margins tend to win more games.
+
+Other offensive statistics such as **points scored (PTS), assists (AST), and field goal metrics** also show moderate positive correlations with winning performance.
+
+These relationships provide insight into which team statistics are most strongly associated with success and help motivate the use of predictive models in the next stage of the analysis.
+
+
+
 ## How to Run the Project
 
 Clone the repository:

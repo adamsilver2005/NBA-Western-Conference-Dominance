@@ -118,3 +118,25 @@ sns.histplot(
 plt.title("Point Differential Distribution")
 
 plt.show()
+
+
+
+
+# Correlation Analysis 
+numeric_columns = data.select_dtypes(include = ["float64", "int64"])
+
+
+correlation = numeric_columns.corr()
+
+# do the heatmap 
+plt.figure(figsize=(12,10))
+
+sns.heatmap(
+    correlation, 
+    cmap = "coolwarm",
+    center = 0
+)
+
+plt.title("Correlation Heatmap")
+
+plt.show()
