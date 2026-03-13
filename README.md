@@ -188,7 +188,7 @@ The distribution for Western Conference teams is slightly shifted to the right c
 
 ### Correlation Heatmap of Team Statistics
 
-![Correlation Heatmap](images/correlation_heatmap.png)
+![Correlation Heatmap](images/Correlation Heatmap.png)
 
 This heatmap visualizes the correlation between all numerical variables in the dataset. Correlation values range from **-1 to 1**, where values closer to **1 indicate strong positive relationships**, values closer to **-1 indicate strong negative relationships**, and values near **0 indicate weak or no linear relationship**.
 
