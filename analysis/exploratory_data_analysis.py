@@ -140,3 +140,8 @@ sns.heatmap(
 plt.title("Correlation Heatmap")
 
 plt.show()
+
+corr_with_wins = correlation["W_PCT"].sort_values(ascending=False)
+
+print("\nCorrelation with Win Percentage:")
+print(corr_with_wins)
