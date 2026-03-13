@@ -164,6 +164,10 @@ This initial comparison provides evidence that Western Conference teams may perf
 
 
 
+### Win Percentage Over Time by Conference
+
+![Win Percentage Over Time](images/win_pct_trend_over_time.png)
+
 
 
 ## How to Run the Project

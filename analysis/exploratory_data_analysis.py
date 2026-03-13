@@ -76,3 +76,26 @@ plt.title("Win Percentage by Conference")
 plt.show()
 
 
+
+
+
+# win percentage over time 
+season_conf = data.groupby(["Season", "Conference"])["W_PCT"].mean().reset_index()
+
+
+
+plt.figure(figsize=(12,6))
+
+sns.lineplot(
+    data = season_conf,
+    x = "Season",
+    y = "W_PCT", 
+    hue = "Conference" # colour code by conference 
+)
+
+plt.xticks(rotation = 90)
+
+plt.title("Average Conference Win Percentage Over Time")
+
+
+plt.show()
