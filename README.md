@@ -200,6 +200,32 @@ These relationships provide insight into which team statistics are most strongly
 
 
 
+### Top Correlations with Winning
+
+To better understand which team statistics are associated with success, correlations with win percentage (W_PCT) were examined.
+
+The strongest positive correlations with winning include:
+
+| Statistic | Correlation with W_PCT |
+|----------|------------------------|
+| PLUS_MINUS | 0.97 |
+| FG_PCT | 0.56 |
+| FG3_PCT | 0.46 |
+| AST | 0.31 |
+| DREB | 0.30 |
+| PTS | 0.27 |
+
+Among these variables, point differential (PLUS_MINUS) shows the strongest relationship with winning. This indicates that teams that outscore opponents by larger margins tend to achieve higher win percentages. Shooting efficiency metrics such as field goal percentage (FG_PCT) and three-point percentage (FG3_PCT) also show strong positive relationships with winning, suggesting that offensive efficiency is an important factor in team success. Additionally, statistics like assists and defensive rebounds show moderate correlations with winning, highlighting the importance of ball movement and defensive performance. Finally, Turnovers (TOV) show a negative correlation with win percentage, indicating that teams committing fewer turnovers tend to perform better.
+
+
+
+### Scatter Plot of Point Differential vs Win Percentage 
+
+![Scatter Plot of Point Differential vs Win Percentage](images/plus_minus_vs_win_pct.png)
+
+This scatter plot shows the relationship between team point differential (PLUS_MINUS) and win percentage (W_PCT) across NBA teams. Each point represents a team-season, with colors distinguishing teams from the Eastern and Western Conferences. The visualization reveals a strong positive relationship between point differential and win percentage. Teams that outscore their opponents by larger margins tend  to have higher win percentages. This relationship appears consisten across both conferences, indicating that point differential is a strong indicator of team performance. While both conferences follow the same overall trend, Western Conference teams appear slightly more concentrated in the higher point differential and win percentage range (top right) in several seasons, supporting the hypothesis that the Western Conference has historically been stronger.
+
+
 ## How to Run the Project
 
 Clone the repository:

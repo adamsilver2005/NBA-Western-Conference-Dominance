@@ -145,3 +145,21 @@ corr_with_wins = correlation["W_PCT"].sort_values(ascending=False)
 
 print("\nCorrelation with Win Percentage:")
 print(corr_with_wins)
+
+
+
+
+# scatter plot of point differential vs win %
+
+plt.figure(figsize=(8,5))
+
+sns.scatterplot(
+    data=data,
+    x="PLUS_MINUS",
+    y="W_PCT",
+    hue="Conference"
+)
+
+plt.title("Point Differential vs Win Percentage")
+
+plt.show()
