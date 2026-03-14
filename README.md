@@ -12,6 +12,7 @@ Python | pandas | NumPy | Data Analysis | Machine Learning | Sports Analytics
 - [How to Run the Project](#how-to-run-the-project)
 - [Hypothesis Testing](#hypothesis-testing)
 - [Predictive Modeling](#predictive-modeling)
+- [Final Conclusion](#final-conclusion)
 
 
 ## Project Goal
@@ -243,6 +244,10 @@ The alternative hypothesis is that there is a difference in the statistic that w
 - Conclusion: Western teams outscore opponents by larger margins, supporting the claim of Western dominance.
 
 Other metrics like assists, rebounds, and shooting efficiency were also tested, and all of them showed significant differences in favor of Western Conference dominance. 
+
+
+
+## Predictive Modeling 
 
 
 
