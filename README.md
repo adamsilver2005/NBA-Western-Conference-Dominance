@@ -10,7 +10,7 @@ Python | pandas | NumPy | Data Analysis | Machine Learning | Sports Analytics
 - [Dataset Columns](#dataset-columns)
 - [Exploratory Data Analysis](#exploratory-data-analysis)
 - [How to Run the Project](#how-to-run-the-project)
-- [Statistical Testing](#statistical-testing)
+- [Hypothesis Testing](#hypothesis-testing)
 - [Predictive Modeling](#predictive-modeling)
 
 
@@ -230,17 +230,17 @@ This scatter plot shows the relationship between team point differential (PLUS_M
 
 ## Hypothesis Testing
 
-We conducted hypothesis tests to determine whether Western Conference teams outperform Eastern Conference teams.
+We conducted hypothesis tests to determine whether Western Conference teams outperform Eastern Conference teams. The null hypothesis was there is no difference in statistic being tested between conferences. The alternative hypothesis is that there is a difference in the statistic that we are testing between conferences.
 
-**Win Percentage:**  
-- T-test results: t = 3.45, p < 0.01  
-- Conclusion: Western teams have a **statistically higher average win percentage** than Eastern teams.
+**Win Percentage (W_PCT):**  
+- T-test results: t = 3.12, p = 0.0001  
+- Conclusion: Western teams have a statistically higher average win percentage than Eastern teams.
 
 **Point Differential (PLUS_MINUS):**  
 - T-test results: t = 4.12, p < 0.01  
-- Conclusion: Western teams **outscore opponents by larger margins**, supporting the claim of Western dominance.
+- Conclusion: Western teams outscore opponents by larger margins, supporting the claim of Western dominance.
 
-Other metrics like **assists, rebounds, and shooting efficiency** were also tested, and several showed significant differences in favor of the West.
+Other metrics like assists, rebounds, and shooting efficiency were also tested, and all of them showed significant differences in favor of the West.
 
 
 
