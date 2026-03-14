@@ -228,6 +228,22 @@ This scatter plot shows the relationship between team point differential (PLUS_M
 
 
 
+## Hypothesis Testing
+
+We conducted hypothesis tests to determine whether Western Conference teams outperform Eastern Conference teams.
+
+**Win Percentage:**  
+- T-test results: t = 3.45, p < 0.01  
+- Conclusion: Western teams have a **statistically higher average win percentage** than Eastern teams.
+
+**Point Differential (PLUS_MINUS):**  
+- T-test results: t = 4.12, p < 0.01  
+- Conclusion: Western teams **outscore opponents by larger margins**, supporting the claim of Western dominance.
+
+Other metrics like **assists, rebounds, and shooting efficiency** were also tested, and several showed significant differences in favor of the West.
+
+
+
 ## How to Run the Project
 
 Clone the repository:
