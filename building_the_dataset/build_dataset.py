@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-raw_dataset = pd.read_csv("C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance/data/nba_team_stats.csv")
+raw_dataset = pd.read_csv("C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance/data/raw/nba_team_stats.csv")
 
 
 # print(raw_dataset.shape)
@@ -122,3 +122,78 @@ updated_dataset = updated_dataset.drop(columns=["TEAM_ID"])
 
 updated_dataset.to_csv("updated_dataset.csv", index=False)
 
+
+
+
+
+
+# webscrapping the 2023-2024 win and losses for each team for the predictive model to compare
+
+# get the website 
+
+url = "https://www.basketball-reference.com/leagues/NBA_2024.html"
+
+tables = pd.read_html(url)
+
+
+
+# print out all of the tables first few rows to see whic one we need
+
+for i, table in enumerate(tables):
+    print(i)
+    print(table.head())
+
+
+
+# we need the first and second table 
+east_stats_2024 = tables[0]
+
+west_stats_2024 = tables[1]
+
+
+# check to make sure
+# print(east_stats_2024)
+
+# print(west_stats_2024)
+
+
+# remove some of the repeated header rows 
+east_stats_2024 = east_stats_2024[east_stats_2024["Eastern Conference"] != "Eastern Conference"]
+
+west_stats_2024 = west_stats_2024[west_stats_2024["Western Conference"] != "Western Conference"]
+
+
+# columns have slightly different names so standardize them 
+
+east_stats_2024 = east_stats_2024.rename(columns = {"Eastern Conference": "Team"})
+
+west_stats_2024 = west_stats_2024.rename(columns = {"Western Conference": "Team"})
+
+
+
+# combine both tables 
+
+team_stats_2024 = pd.concat([east_stats_2024, west_stats_2024], ignore_index= True)
+
+
+print("team stats 2024:", team_stats_2024.head())
+
+
+
+# add a confernece column
+east_stats_2024["Conference"] = "East"
+west_stats_2024["Conference"] = "West"
+
+
+# combine the tables 
+team_stats_2024 = pd.concat([east_stats_2024, west_stats_2024], ignore_index= True)
+
+
+# make sure it worked
+print("team stats 2024:", team_stats_2024.head())
+
+print("team stats 2024 tail:", team_stats_2024.tail())
+
+
+# export to csv 
+team_stats_2024.to_csv("C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance/data/processed/nba_2024_scraped_.csv", index=False)

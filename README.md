@@ -249,7 +249,7 @@ Other metrics like assists, rebounds, and shooting efficiency were also tested, 
 
 ## Predictive Modeling 
 
-
+predict 20230-24 season win percentage for each team using random forests 
 
 ## How to Run the Project
 
