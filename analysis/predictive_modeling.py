@@ -3,7 +3,8 @@
 # Date: 2026-03-17
 # Description: Two predictive modeling approaches for NBA team win percentage.
 #              Section A: Explain W_PCT from same-season stats (1996-97 to 2022-23 train, 2023-24 test)
-#              Section B: Forecast W_PCT from previous season's stats (season N -> N+1)
+#              Forecast W_PCT from previous season's stats (season N -> N+1), enhanced with rolling averages, 
+#              YoY changes, and previous W_PCT
 
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
@@ -37,7 +38,7 @@ FEATURES = [
 ]
 
 
-# SECTION A — Explain W_PCT from same-season stats
+# SECTION A: Explain W_PCT from same-season stats
 # Goal: given a team's stats in a season, how well can the model explain
 # their win percentage?
 # Train: all seasons 1996-97 through 2022-23
@@ -116,32 +117,73 @@ print("\n  Predicted vs Actual Win Percentage:")
 print(results_a.to_string(index=False))
 
 
-# SECTION B — Forecast W_PCT from previous season stats
-# Goal: can last season's stats predict next season's win percentage?
-# Approach: use season N stats to predict season N+1 W_PCT
+
+
+
+
+# SECTION B: Forecast W_PCT from previous season stats
+# Goal: can historical team stats predict next season's win percentage?
+# Uses three types of features to give the model more context about each
+# team's trajectory rather than just a single season snapshot:
+#
+#   1. Last season's raw stats and W_PCT
+#   2. 3 year rolling averages of each stat
+#   3. Year over year change in each stat
+#
 # Train: all lagged season pairs up to 2021-22 → 2022-23
 # Test:  2022-23 stats used to forecast 2023-24 W_PCT
+# ═══════════════════════════════════════════════════════════════════════════════
 
 print("SECTION B: Forecasting W_PCT from Previous Season Stats")
 
-
-# sort by team and season so the shift(-1) correctly pairs each season
-# with the following season for the same team
+# sort by team and season so all rolling/lag operations are applied correctly
 data_b = data.sort_values(["TEAM_NAME", "Season"]).copy()
 
-# for each team, create a new column containing next season's W_PCT as the target
+
+# last season's W_PCT as a feature: 
+# a strong prior teams that won a lot last year tend to win more this year
+data_b["PREV_W_PCT"] = data_b.groupby("TEAM_NAME")["W_PCT"].shift(1)
+
+# 3 year rolling averages for each stat:
+# smooths out outlier seasons and captures sustained team quality
+# min_periods=1 means teams with fewer than 3 seasons still get a value
+for stat in FEATURES:
+    data_b[f"{stat}_ROLL3"] = (
+        data_b.groupby("TEAM_NAME")[stat]
+        .transform(lambda x: x.shift(1).rolling(window=3, min_periods=1).mean())
+    )
+
+# year over year change in each stat
+# captures whether a team is improving or declining heading into next season
+for stat in FEATURES:
+    data_b[f"{stat}_CHANGE"] = (
+        data_b.groupby("TEAM_NAME")[stat]
+        .transform(lambda x: x.shift(1).diff())
+    )
+
+# combine all three feature types into one list
+FEATURES_B = (
+    FEATURES                                  # last season's raw stats
+    + ["PREV_W_PCT"]                          # last season's W_PCT
+    + [f"{s}_ROLL3"  for s in FEATURES]       # 3 year rolling averages
+    + [f"{s}_CHANGE" for s in FEATURES]       # year over year changes
+)
+
+# create the target: next season's W_PCT
 data_b["NEXT_W_PCT"] = data_b.groupby("TEAM_NAME")["W_PCT"].shift(-1)
 
-# remove rows where there is no following season (each team's last season)
-data_b = data_b.dropna(subset=["NEXT_W_PCT"])
+# drop rows with NaN in any feature or target column
+# this removes each team's first 1-2 seasons (not enough history for rolling)
+# and each team's final season (no next season to predict)
+data_b = data_b.dropna(subset=FEATURES_B + ["NEXT_W_PCT"])
 
 # 2022-23 rows pair with 2023-24 W_PCT, so use them as the test set
 train_b = data_b[data_b["Season"] != 2023]
 test_b  = data_b[data_b["Season"] == 2023]
 
-X_train_b = train_b[FEATURES]
+X_train_b = train_b[FEATURES_B]
 y_train_b  = train_b["NEXT_W_PCT"]
-X_test_b   = test_b[FEATURES]
+X_test_b   = test_b[FEATURES_B]
 y_test_b   = test_b["NEXT_W_PCT"]
 
 # define the three models to compare
@@ -164,10 +206,10 @@ for name, model in models_b.items():
     model.fit(X_train_b, y_train_b)
     preds = model.predict(X_test_b)
 
-    rmse = np.sqrt(mean_squared_error(y_test_b, preds))
-    r2   = r2_score(y_test_b, preds)
+    rmse  = np.sqrt(mean_squared_error(y_test_b, preds))
+    r2    = r2_score(y_test_b, preds)
 
-    # 10-fold CV gives a more reliable estimate of generalization on ~800 rows
+    # 10-fold CV on training data only
     cv_r2 = cross_val_score(model, X_train_b, y_train_b, cv=10, scoring="r2").mean()
 
     print(f"\n  {name}")
@@ -175,7 +217,6 @@ for name, model in models_b.items():
     print(f"    R²:          {r2:.4f}")
     print(f"    CV R² (10k): {cv_r2:.4f}")
 
-    # keep track of the best model by lowest RMSE
     if rmse < best_rmse_b:
         best_rmse_b  = rmse
         best_model_b = model
@@ -183,16 +224,17 @@ for name, model in models_b.items():
 
 print(f"\n  Best model: {best_name_b}")
 
-# retrain the best model on all lagged data before making the final forecast
+# retrain best model on all available lagged data before forecasting
 best_model_b.fit(X_train_b, y_train_b)
 
-# print feature importances if the best model is a tree-based model
+# print feature importances if tree-based model won
+# capped at top 10 since there are now 25 features total
 if hasattr(best_model_b, "feature_importances_"):
-    importances = pd.Series(best_model_b.feature_importances_, index=FEATURES)
-    print("\n  Feature Importances:")
-    print(importances.sort_values(ascending=False).to_string())
+    importances = pd.Series(best_model_b.feature_importances_, index=FEATURES_B)
+    print("\n  Feature Importances (top 10):")
+    print(importances.sort_values(ascending=False).head(10).to_string())
 
-# forecast 2023-24 win percentages using 2022-23 stats as input
+# forecast 2023-24 W_PCT using 2022-23 stats as input
 preds_b = best_model_b.predict(X_test_b)
 
 results_b = test_b[["TEAM_NAME", "Conference"]].copy()
@@ -202,4 +244,3 @@ results_b = results_b.sort_values("Predicted_2324_W_PCT", ascending=False)
 
 print("\n  Predicted vs Actual Win Percentage:")
 print(results_b.to_string(index=False))
-

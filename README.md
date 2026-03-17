@@ -247,17 +247,13 @@ Other metrics like assists, rebounds, and shooting efficiency were also tested, 
 
 
 
-## Predictive Modeling 
+## Predictive Modeling
 
 Two modeling approaches were implemented, each answering a distinct question.
-Three models were evaluated in both sections: **Linear Regression**,
-**Random Forest**, and **Gradient Boosting**.
+Three models were evaluated in both sections: Linear Regression, Random Forest, and Gradient Boosting.
 
-> **Note:** PLUS_MINUS was excluded from all models as a feature. Its 0.97
-> correlation with W_PCT would constitute data leakage — the model would
-> effectively be predicting the target using a near-perfect proxy of itself.
+Note: PLUS_MINUS was excluded from all models as a feature. Its 0.97 correlation with W_PCT would mean that the model would effectively be predicting the target using itself.
 
----
 
 ### Section A — Explaining W_PCT from Same-Season Stats
 
@@ -326,84 +322,127 @@ include New Orleans (predicted 0.724, actual 0.598) and Chicago (predicted
 0.611, actual 0.476), both of whom underperformed their raw statistics.
 Dallas Mavericks was the biggest positive outlier — predicted 0.531 but
 achieved 0.610, suggesting they overperformed their counting stats, largely
-driven by Luka Dončić's playoff-caliber play throughout the regular season.
+driven by Luka Dončić's playoff-caliber performance throughout the regular season.
 
 ---
 
 ### Section B — Forecasting W_PCT from Previous Season Stats
 
-**Question:** Can last season's team stats predict next season's win percentage?
+**Question:** Can historical team stats predict next season's win percentage?
 
 **Approach:**
-- Features: same as Section A (PTS, REB, AST, FG_PCT, FG3_PCT, TOV, STL, BLK)
-- Target: next season's W_PCT (season N stats → season N+1 W_PCT)
+
+Rather than using only the previous season's raw stats, the model was enhanced
+with three types of features to capture each team's trajectory more fully:
+
+- **Last season's raw stats** — PTS, REB, AST, FG_PCT, FG3_PCT, TOV, STL, BLK
+- **Last season's W_PCT** — how good the team was overall last year
+- **3-year rolling averages** — smooths out outlier seasons and captures sustained team quality
+- **Year over year changes** — whether the team is improving or declining heading into next season
+
+This gives the model 25 features in total compared to the 8 used in Section A.
+
 - Training data: all lagged season pairs up to 2021-22 → 2022-23
 - Test data: 2022-23 stats used to predict 2023-24 W_PCT
 - Evaluation: RMSE, R², and 10-fold cross-validated R²
 
 | Model | RMSE | R² | CV R² (10-fold) |
 |---|---|---|---|
-| Linear Regression | 0.1566 | 0.0512 | 0.2150 |
-| Random Forest | 0.1626 | -0.0221 | 0.1378 |
-| Gradient Boosting | 0.1602 | 0.0074 | 0.1388 |
+| Linear Regression | 0.1495 | 0.1352 | 0.2370 |
+| Random Forest | 0.1467 | 0.1679 | 0.1805 |
+| Gradient Boosting | 0.1496 | 0.1345 | 0.1600 |
 
-**Best model: Linear Regression**
+**Best model: Random Forest**
 
-All three models struggled significantly in Section B, with R² values close to
-zero. Linear Regression again performed best but only explains about 5% of the
-variance in next season's win percentage — barely better than simply predicting
-the league average for every team.
+Unlike Section A where Linear Regression won, Random Forest performed best in
+Section B. With 25 features capturing non-linear relationships between a team's
+trajectory and future performance, a tree-based model is better suited to find
+patterns that a linear model cannot.
 
-This is an expected and meaningful finding. Raw team statistics from one season
-are poor predictors of the following season because so much changes between
-seasons — roster moves, injuries, player development, and coaching adjustments
-all play a significant role that counting stats alone cannot capture. The average
-prediction error nearly doubles compared to Section A (0.1566 vs 0.0755),
-reflecting how much harder genuine forecasting is compared to explanation.
+**Feature Importances (top 10):**
+
+| Feature | Importance |
+|---|---|
+| PREV_W_PCT | 0.287 |
+| FG_PCT | 0.244 |
+| BLK_ROLL3 | 0.067 |
+| FG3_PCT | 0.055 |
+| TOV_ROLL3 | 0.045 |
+| REB | 0.038 |
+| BLK | 0.034 |
+| AST | 0.027 |
+| STL | 0.021 |
+| STL_ROLL3 | 0.017 |
+
+The two most important features by a significant margin are last season's win
+percentage (PREV_W_PCT) and field goal percentage (FG_PCT). This suggests that
+how good a team was overall last year, combined with their shooting efficiency,
+are the strongest available signals for predicting next season's success.
+The presence of rolling average features like BLK_ROLL3 and TOV_ROLL3 in the
+top 10 confirms that multi-season trends add meaningful predictive value beyond
+a single season snapshot.
+
+**Comparison to original Section B:**
+
+Adding historical context meaningfully improved the model's performance compared
+to using only last season's raw stats:
+
+| | Original | Enhanced |
+|---|---|---|
+| RMSE | 0.1566 | 0.1467 |
+| R² | 0.0512 | 0.1679 |
+| Best model | Linear Regression | Random Forest |
+
+R² more than tripled from 0.05 to 0.17, demonstrating that a team's historical
+trajectory is a significantly better predictor of future performance than any
+single season's stats alone.
 
 **2023-24 Forecasted vs Actual Win Percentage** *(using 2022-23 stats as input)*:
 
 | Team | Conference | Forecasted W_PCT | Actual W_PCT |
 |---|---|---|---|
-| Denver Nuggets | West | 0.608 | 0.695 |
-| Memphis Grizzlies | West | 0.606 | 0.329 |
-| Chicago Bulls | East | 0.581 | 0.476 |
-| Milwaukee Bucks | East | 0.558 | 0.598 |
-| Toronto Raptors | East | 0.541 | 0.305 |
-| Washington Wizards | East | 0.539 | 0.183 |
-| New Orleans Pelicans | West | 0.538 | 0.598 |
+| Phoenix Suns | West | 0.587 | 0.598 |
+| Philadelphia 76ers | East | 0.582 | 0.573 |
+| Memphis Grizzlies | West | 0.577 | 0.329 |
+| Boston Celtics | East | 0.570 | 0.780 |
+| Los Angeles Clippers | West | 0.567 | 0.622 |
+| Minnesota Timberwolves | West | 0.564 | 0.683 |
+| Milwaukee Bucks | East | 0.564 | 0.598 |
+| Golden State Warriors | West | 0.557 | 0.561 |
+| Utah Jazz | West | 0.555 | 0.378 |
+| Atlanta Hawks | East | 0.551 | 0.439 |
+| New Orleans Pelicans | West | 0.543 | 0.598 |
+| Dallas Mavericks | West | 0.543 | 0.610 |
+| Denver Nuggets | West | 0.539 | 0.695 |
 | Brooklyn Nets | East | 0.537 | 0.390 |
-| Atlanta Hawks | East | 0.535 | 0.439 |
-| Philadelphia 76ers | East | 0.534 | 0.573 |
-| Cleveland Cavaliers | East | 0.532 | 0.585 |
-| Minnesota Timberwolves | West | 0.526 | 0.683 |
-| Boston Celtics | East | 0.523 | 0.780 |
-| Phoenix Suns | West | 0.518 | 0.598 |
-| Los Angeles Clippers | West | 0.516 | 0.622 |
-| New York Knicks | East | 0.514 | 0.610 |
-| Los Angeles Lakers | West | 0.506 | 0.573 |
-| Sacramento Kings | West | 0.488 | 0.561 |
-| Oklahoma City Thunder | West | 0.477 | 0.695 |
-| Orlando Magic | East | 0.460 | 0.573 |
-| Charlotte Hornets | East | 0.458 | 0.256 |
-| Golden State Warriors | West | 0.458 | 0.561 |
-| Utah Jazz | West | 0.451 | 0.378 |
-| Houston Rockets | West | 0.431 | 0.500 |
-| Indiana Pacers | East | 0.431 | 0.573 |
-| Portland Trail Blazers | West | 0.404 | 0.256 |
-| San Antonio Spurs | West | 0.396 | 0.268 |
-| Miami Heat | East | 0.393 | 0.561 |
-| Dallas Mavericks | West | 0.392 | 0.610 |
-| Detroit Pistons | East | 0.356 | 0.171 |
+| Oklahoma City Thunder | West | 0.532 | 0.695 |
+| Los Angeles Lakers | West | 0.532 | 0.573 |
+| Sacramento Kings | West | 0.524 | 0.561 |
+| Charlotte Hornets | East | 0.521 | 0.256 |
+| Washington Wizards | East | 0.517 | 0.183 |
+| New York Knicks | East | 0.512 | 0.610 |
+| Indiana Pacers | East | 0.512 | 0.573 |
+| Miami Heat | East | 0.512 | 0.561 |
+| Orlando Magic | East | 0.501 | 0.573 |
+| Cleveland Cavaliers | East | 0.497 | 0.585 |
+| Chicago Bulls | East | 0.491 | 0.476 |
+| San Antonio Spurs | West | 0.486 | 0.268 |
+| Toronto Raptors | East | 0.482 | 0.305 |
+| Portland Trail Blazers | West | 0.460 | 0.256 |
+| Houston Rockets | West | 0.437 | 0.500 |
+| Detroit Pistons | East | 0.415 | 0.171 |
 
-The forecasts are noticeably clustered between 0.35 and 0.61, failing to
-predict either strong or weak teams accurately. The largest misses highlight
-exactly why season-to-season forecasting is difficult — Memphis was predicted
-at 0.606 but collapsed to 0.329 following Ja Morant's suspension, while Boston
-was predicted at 0.523 but jumped to 0.780 in a breakout season. Oklahoma City
-was predicted at 0.477 but reached 0.695 as a young roster took a significant
-leap. These outcomes were driven by factors completely invisible to a model
-built on the previous season's counting stats.
+Despite the improvement, forecasts remain clustered between 0.41 and 0.59,
+struggling to predict extreme outcomes at either end of the standings. The
+largest misses highlight the fundamental limits of stat-based forecasting —
+Boston was predicted at 0.570 but delivered a historic 0.780 season, Memphis
+collapsed from a predicted 0.577 to just 0.329 following Ja Morant's
+suspension, and Oklahoma City's young roster dramatically outperformed
+expectations at 0.695 against a prediction of 0.532. These outcomes were
+driven by factors completely invisible to any model built on prior season
+statistics alone.
+
+
 
 ## How to Run the Project
 
