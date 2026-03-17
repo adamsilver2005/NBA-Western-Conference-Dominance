@@ -120,7 +120,7 @@ updated_dataset = updated_dataset.drop(columns=["Unnamed: 0"])
 updated_dataset = updated_dataset.drop(columns=["TEAM_ID"])
 
 
-updated_dataset.to_csv("updated_dataset.csv", index=False)
+# updated_dataset.to_csv("updated_dataset.csv", index=False)
 
 
 
@@ -214,7 +214,25 @@ print("team stats 2024:", team_stats_2024.head())
 print("team stats 2024 tail:", team_stats_2024.tail())
 
 
+
+
+features = [
+    "PTS",
+    "REB",
+    "AST",
+    "FG_PCT",
+    "FG3_PCT",
+    "TOV",
+    "STL",
+    "BLK"
+]
+
+
+print(team_stats_2024.columns)
+print(features)
+
+
 # export to csv 
-team_stats_2024.to_csv("C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance/data/processed/nba_2024_scraped_.csv", index=False)
+team_stats_2024.to_csv("C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance/data/raw/nba_2024_scraped_.csv", index=False)
 
 
