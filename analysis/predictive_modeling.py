@@ -18,11 +18,9 @@ data = pd.read_csv(
     "/data/processed/updated_dataset.csv"
 )
 
+# fix LA Clippers naming issue
+data["TEAM_NAME"] = data["TEAM_NAME"].replace("LA Clippers", "Los Angeles Clippers")
 
-
-# temporary debug lines — remove after checking
-print(data["Season"].unique())
-print(data["Season"].dtype)
 
 
 # features used in both sections
@@ -49,8 +47,8 @@ print("SECTION A: Explaining W_PCT from Same-Season Stats")
 
 
 # split into train and test sets
-train_a = data[data["Season"] != 2023]
-test_a  = data[data["Season"] == 2023]
+train_a = data[data["Season"] != 2024]
+test_a  = data[data["Season"] == 2024]
 
 X_train_a = train_a[FEATURES]
 y_train_a  = train_a["W_PCT"]
@@ -138,8 +136,8 @@ data_b["NEXT_W_PCT"] = data_b.groupby("TEAM_NAME")["W_PCT"].shift(-1)
 data_b = data_b.dropna(subset=["NEXT_W_PCT"])
 
 # 2022-23 rows pair with 2023-24 W_PCT, so use them as the test set
-train_b = data_b[data_b["Season"] != 2022]
-test_b  = data_b[data_b["Season"] == 2022]
+train_b = data_b[data_b["Season"] != 2023]
+test_b  = data_b[data_b["Season"] == 2023]
 
 X_train_b = train_b[FEATURES]
 y_train_b  = train_b["NEXT_W_PCT"]

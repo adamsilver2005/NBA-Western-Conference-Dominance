@@ -249,7 +249,161 @@ Other metrics like assists, rebounds, and shooting efficiency were also tested, 
 
 ## Predictive Modeling 
 
-predict 20230-24 season win percentage for each team using random forests 
+Two modeling approaches were implemented, each answering a distinct question.
+Three models were evaluated in both sections: **Linear Regression**,
+**Random Forest**, and **Gradient Boosting**.
+
+> **Note:** PLUS_MINUS was excluded from all models as a feature. Its 0.97
+> correlation with W_PCT would constitute data leakage — the model would
+> effectively be predicting the target using a near-perfect proxy of itself.
+
+---
+
+### Section A — Explaining W_PCT from Same-Season Stats
+
+**Question:** Given a team's stats in a season, how well can we explain their win percentage?
+
+**Approach:**
+- Features: PTS, REB, AST, FG_PCT, FG3_PCT, TOV, STL, BLK
+- Training data: all seasons from 1996-97 to 2022-23
+- Test data: 2023-24 season (held out entirely)
+- Evaluation: RMSE, R², and 10-fold cross-validated R²
+
+| Model | RMSE | R² | CV R² (10-fold) |
+|---|---|---|---|
+| Linear Regression | 0.0755 | 0.7798 | 0.6313 |
+| Random Forest | 0.1464 | 0.1711 | 0.3842 |
+| Gradient Boosting | 0.1182 | 0.4594 | 0.4971 |
+
+**Best model: Linear Regression**
+
+Linear Regression outperformed both tree-based models across all three metrics.
+This is expected given the small dataset size of ~800 rows — simpler models
+tend to generalize better when data is limited, and the relationships between
+team stats and win percentage are largely linear in nature.
+
+The model explains 78% of the variance in win percentage (R² = 0.78) from just
+8 team statistics, with an average prediction error of 7.5 percentage points.
+The cross-validated R² of 0.63 confirms the model generalizes well to unseen seasons.
+
+**2023-24 Predicted vs Actual Win Percentage:**
+
+| Team | Conference | Predicted W_PCT | Actual W_PCT |
+|---|---|---|---|
+| Denver Nuggets | West | 0.742 | 0.695 |
+| Boston Celtics | East | 0.740 | 0.780 |
+| New Orleans Pelicans | West | 0.724 | 0.598 |
+| Oklahoma City Thunder | West | 0.720 | 0.695 |
+| Minnesota Timberwolves | West | 0.676 | 0.683 |
+| Los Angeles Clippers | West | 0.670 | 0.622 |
+| Phoenix Suns | West | 0.633 | 0.598 |
+| Los Angeles Lakers | West | 0.630 | 0.573 |
+| Chicago Bulls | East | 0.611 | 0.476 |
+| Indiana Pacers | East | 0.605 | 0.573 |
+| Milwaukee Bucks | East | 0.589 | 0.598 |
+| Golden State Warriors | West | 0.584 | 0.561 |
+| New York Knicks | East | 0.581 | 0.610 |
+| Philadelphia 76ers | East | 0.577 | 0.573 |
+| Cleveland Cavaliers | East | 0.568 | 0.585 |
+| Sacramento Kings | West | 0.554 | 0.561 |
+| Houston Rockets | West | 0.538 | 0.500 |
+| Dallas Mavericks | West | 0.531 | 0.610 |
+| Miami Heat | East | 0.519 | 0.561 |
+| Orlando Magic | East | 0.517 | 0.573 |
+| Brooklyn Nets | East | 0.466 | 0.390 |
+| Atlanta Hawks | East | 0.457 | 0.439 |
+| Toronto Raptors | East | 0.448 | 0.305 |
+| San Antonio Spurs | West | 0.375 | 0.268 |
+| Utah Jazz | West | 0.367 | 0.378 |
+| Washington Wizards | East | 0.362 | 0.183 |
+| Charlotte Hornets | East | 0.352 | 0.256 |
+| Detroit Pistons | East | 0.342 | 0.171 |
+| Memphis Grizzlies | West | 0.292 | 0.329 |
+| Portland Trail Blazers | West | 0.264 | 0.256 |
+
+Most predictions are within 5-10 percentage points of actual. Notable misses
+include New Orleans (predicted 0.724, actual 0.598) and Chicago (predicted
+0.611, actual 0.476), both of whom underperformed their raw statistics.
+Dallas Mavericks was the biggest positive outlier — predicted 0.531 but
+achieved 0.610, suggesting they overperformed their counting stats, largely
+driven by Luka Dončić's playoff-caliber play throughout the regular season.
+
+---
+
+### Section B — Forecasting W_PCT from Previous Season Stats
+
+**Question:** Can last season's team stats predict next season's win percentage?
+
+**Approach:**
+- Features: same as Section A (PTS, REB, AST, FG_PCT, FG3_PCT, TOV, STL, BLK)
+- Target: next season's W_PCT (season N stats → season N+1 W_PCT)
+- Training data: all lagged season pairs up to 2021-22 → 2022-23
+- Test data: 2022-23 stats used to predict 2023-24 W_PCT
+- Evaluation: RMSE, R², and 10-fold cross-validated R²
+
+| Model | RMSE | R² | CV R² (10-fold) |
+|---|---|---|---|
+| Linear Regression | 0.1566 | 0.0512 | 0.2150 |
+| Random Forest | 0.1626 | -0.0221 | 0.1378 |
+| Gradient Boosting | 0.1602 | 0.0074 | 0.1388 |
+
+**Best model: Linear Regression**
+
+All three models struggled significantly in Section B, with R² values close to
+zero. Linear Regression again performed best but only explains about 5% of the
+variance in next season's win percentage — barely better than simply predicting
+the league average for every team.
+
+This is an expected and meaningful finding. Raw team statistics from one season
+are poor predictors of the following season because so much changes between
+seasons — roster moves, injuries, player development, and coaching adjustments
+all play a significant role that counting stats alone cannot capture. The average
+prediction error nearly doubles compared to Section A (0.1566 vs 0.0755),
+reflecting how much harder genuine forecasting is compared to explanation.
+
+**2023-24 Forecasted vs Actual Win Percentage** *(using 2022-23 stats as input)*:
+
+| Team | Conference | Forecasted W_PCT | Actual W_PCT |
+|---|---|---|---|
+| Denver Nuggets | West | 0.608 | 0.695 |
+| Memphis Grizzlies | West | 0.606 | 0.329 |
+| Chicago Bulls | East | 0.581 | 0.476 |
+| Milwaukee Bucks | East | 0.558 | 0.598 |
+| Toronto Raptors | East | 0.541 | 0.305 |
+| Washington Wizards | East | 0.539 | 0.183 |
+| New Orleans Pelicans | West | 0.538 | 0.598 |
+| Brooklyn Nets | East | 0.537 | 0.390 |
+| Atlanta Hawks | East | 0.535 | 0.439 |
+| Philadelphia 76ers | East | 0.534 | 0.573 |
+| Cleveland Cavaliers | East | 0.532 | 0.585 |
+| Minnesota Timberwolves | West | 0.526 | 0.683 |
+| Boston Celtics | East | 0.523 | 0.780 |
+| Phoenix Suns | West | 0.518 | 0.598 |
+| Los Angeles Clippers | West | 0.516 | 0.622 |
+| New York Knicks | East | 0.514 | 0.610 |
+| Los Angeles Lakers | West | 0.506 | 0.573 |
+| Sacramento Kings | West | 0.488 | 0.561 |
+| Oklahoma City Thunder | West | 0.477 | 0.695 |
+| Orlando Magic | East | 0.460 | 0.573 |
+| Charlotte Hornets | East | 0.458 | 0.256 |
+| Golden State Warriors | West | 0.458 | 0.561 |
+| Utah Jazz | West | 0.451 | 0.378 |
+| Houston Rockets | West | 0.431 | 0.500 |
+| Indiana Pacers | East | 0.431 | 0.573 |
+| Portland Trail Blazers | West | 0.404 | 0.256 |
+| San Antonio Spurs | West | 0.396 | 0.268 |
+| Miami Heat | East | 0.393 | 0.561 |
+| Dallas Mavericks | West | 0.392 | 0.610 |
+| Detroit Pistons | East | 0.356 | 0.171 |
+
+The forecasts are noticeably clustered between 0.35 and 0.61, failing to
+predict either strong or weak teams accurately. The largest misses highlight
+exactly why season-to-season forecasting is difficult — Memphis was predicted
+at 0.606 but collapsed to 0.329 following Ja Morant's suspension, while Boston
+was predicted at 0.523 but jumped to 0.780 in a breakout season. Oklahoma City
+was predicted at 0.477 but reached 0.695 as a young roster took a significant
+leap. These outcomes were driven by factors completely invisible to a model
+built on the previous season's counting stats.
 
 ## How to Run the Project
 

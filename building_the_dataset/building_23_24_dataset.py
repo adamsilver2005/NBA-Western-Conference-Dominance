@@ -8,14 +8,12 @@ import pandas as pd
 
 # load the existing processed dataset
 data = pd.read_csv(
-    "C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance"
-    "/data/processed/updated_dataset.csv"
+    "C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance/data/processed/updated_dataset.csv"
 )
 
 # load the 2023-24 season data
 new = pd.read_csv(
-    "C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance"
-    "/data/raw/nba_2024_scraped.csv"
+    "C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance/data/raw/nba_2024_scraped_.csv"
 )
 
 # conference mapping — assign each team to East or West
@@ -34,30 +32,27 @@ conference_map = {
 
 # rename columns to match the existing dataset
 new = new.rename(columns={
-    "Team":    "TEAM_NAME",
-    "FG":      "FGM",
-    "FGA":     "FGA",
-    "3P":      "FG3M",
-    "3PA":     "FG3A",
-    "FT":      "FTM",
-    "FTA":     "FTA",
-    "ORB":     "OREB",
-    "DRB":     "DREB",
-    "AST":     "AST",
-    "STL":     "STL",
-    "BLK":     "BLK",
-    "TOV":     "TOV",
-    "PTS":     "PTS",
-    "W":       "W",
-    "L":       "L",
-    "W_PCT":   "W_PCT",
+    "Team":  "TEAM_NAME",
+    "FG":    "FGM",
+    "3P":    "FG3M",
+    "3PA":   "FG3A",
+    "FT":    "FTM",
+    "ORB":   "OREB",
+    "DRB":   "DREB",
 })
 
 # add Season and Conference columns
 new["Season"]     = 2024
 new["Conference"] = new["TEAM_NAME"].map(conference_map)
 
-# keep only the columns that exist in the main dataset
+# add any missing columns that exist in the main dataset, filled with None
+# this covers rank columns, PLUS_MINUS, etc. that aren't in the 2023-24 source
+# these columns are not used in modeling so None values are fine
+for col in data.columns:
+    if col not in new.columns:
+        new[col] = None
+
+# reorder columns to match the main dataset exactly
 new = new[data.columns]
 
 # append and save
