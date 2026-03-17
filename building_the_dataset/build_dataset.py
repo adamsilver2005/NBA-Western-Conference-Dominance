@@ -146,47 +146,66 @@ for i, table in enumerate(tables):
 
 
 # we need the first and second table 
-east_stats_2024 = tables[0]
-
-west_stats_2024 = tables[1]
-
+team_stats_2024 = tables[4]
 
 # check to make sure
-# print(east_stats_2024)
-
-# print(west_stats_2024)
-
-
-# remove some of the repeated header rows 
-east_stats_2024 = east_stats_2024[east_stats_2024["Eastern Conference"] != "Eastern Conference"]
-
-west_stats_2024 = west_stats_2024[west_stats_2024["Western Conference"] != "Western Conference"]
-
-
-# columns have slightly different names so standardize them 
-
-east_stats_2024 = east_stats_2024.rename(columns = {"Eastern Conference": "Team"})
-
-west_stats_2024 = west_stats_2024.rename(columns = {"Western Conference": "Team"})
+print("check:", team_stats_2024)
 
 
 
-# combine both tables 
 
-team_stats_2024 = pd.concat([east_stats_2024, west_stats_2024], ignore_index= True)
+# Remove repeated header rows
+team_stats_2024 = team_stats_2024[team_stats_2024["Team"] != "Team"]
+
+# Rename columns to match my dataset
+team_stats_2024 = team_stats_2024.rename(columns={
+    "TRB": "REB",
+    "FG%": "FG_PCT",
+    "3P%": "FG3_PCT"
+})
+
+# Reset index
+team_stats_2024 = team_stats_2024.reset_index(drop=True)
 
 
-print("team stats 2024:", team_stats_2024.head())
 
 
 
-# add a confernece column
-east_stats_2024["Conference"] = "East"
-west_stats_2024["Conference"] = "West"
+
+# get the actual standings for the season
+
+# East + West tables
+east = tables[0]
+west = tables[1]
+
+# Fix column names
+east.columns = ["Team", "W", "L", "W_PCT", "GB", "PS_G", "PA_G", "SRS"]
+west.columns = ["Team", "W", "L", "W_PCT", "GB", "PS_G", "PA_G", "SRS"]
+
+# Remove header rows inside table
+east = east[east["Team"] != "Team"]
+west = west[west["Team"] != "Team"]
+
+# Combine
+standings = pd.concat([east, west], ignore_index=True)
+
+# Convert numeric columns
+standings["W"] = pd.to_numeric(standings["W"])
+standings["L"] = pd.to_numeric(standings["L"])
+standings["W_PCT"] = pd.to_numeric(standings["W_PCT"])
 
 
-# combine the tables 
-team_stats_2024 = pd.concat([east_stats_2024, west_stats_2024], ignore_index= True)
+# some teams include a * for playoff teams which we don't care about
+team_stats_2024["Team"] = team_stats_2024["Team"].str.replace("*", "", regex=False)
+standings["Team"] = standings["Team"].str.replace("*", "", regex=False)
+
+
+team_stats_2024 = team_stats_2024.merge(
+    standings[["Team", "W", "L", "W_PCT"]],
+    on="Team"
+)
+
+
 
 
 # make sure it worked
@@ -197,3 +216,5 @@ print("team stats 2024 tail:", team_stats_2024.tail())
 
 # export to csv 
 team_stats_2024.to_csv("C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance/data/processed/nba_2024_scraped_.csv", index=False)
+
+
