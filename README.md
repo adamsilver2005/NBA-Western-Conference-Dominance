@@ -255,11 +255,11 @@ Three models were evaluated in both sections: Linear Regression, Random Forest, 
 Note: PLUS_MINUS was excluded from all models as a feature. Its 0.97 correlation with W_PCT would mean that the model would effectively be predicting the target using itself.
 
 
-### Section A — Explaining W_PCT from Same-Season Stats
+### Section A: Explaining W_PCT from Same-Season Stats
 
 **Question:** Given a team's stats in a season, how well can we explain their win percentage?
 
-**Approach:**
+Approach:
 - Features: PTS, REB, AST, FG_PCT, FG3_PCT, TOV, STL, BLK
 - Training data: all seasons from 1996-97 to 2022-23
 - Test data: 2023-24 season (held out entirely)
@@ -271,16 +271,11 @@ Note: PLUS_MINUS was excluded from all models as a feature. Its 0.97 correlation
 | Random Forest | 0.1464 | 0.1711 | 0.3842 |
 | Gradient Boosting | 0.1182 | 0.4594 | 0.4971 |
 
-**Best model: Linear Regression**
+Best model: Linear Regression
 
-Linear Regression outperformed both tree-based models across all three metrics.
-This is expected given the small dataset size of ~800 rows — simpler models
-tend to generalize better when data is limited, and the relationships between
-team stats and win percentage are largely linear in nature.
+Linear Regression outperformed both tree-based models across all three metrics. This is expected given the small dataset size of ~800 rows, and that simpler models tend to generalize better when data is limited, and the relationships between team stats and win percentage are largely linear.
 
-The model explains 78% of the variance in win percentage (R² = 0.78) from just
-8 team statistics, with an average prediction error of 7.5 percentage points.
-The cross-validated R² of 0.63 confirms the model generalizes well to unseen seasons.
+The model explains 78% of the variance in win percentage (R² = 0.78) from just 8 team statistics, with an average prediction error of 7.5%. The cross-validated R² of 0.63 confirms the model generalizes well to unseen seasons.
 
 **2023-24 Predicted vs Actual Win Percentage:**
 
@@ -317,28 +312,22 @@ The cross-validated R² of 0.63 confirms the model generalizes well to unseen se
 | Memphis Grizzlies | West | 0.292 | 0.329 |
 | Portland Trail Blazers | West | 0.264 | 0.256 |
 
-Most predictions are within 5-10 percentage points of actual. Notable misses
-include New Orleans (predicted 0.724, actual 0.598) and Chicago (predicted
-0.611, actual 0.476), both of whom underperformed their raw statistics.
-Dallas Mavericks was the biggest positive outlier — predicted 0.531 but
-achieved 0.610, suggesting they overperformed their counting stats, largely
-driven by Luka Dončić's playoff-caliber performance throughout the regular season.
+Most predictions are within 5-10 percentage points of actual. Some of the notable misses include New Orleans (predicted 0.724, actual 0.598) and Chicago (predicted 0.611, actual 0.476), both of whom underperformed their raw statistics. Dallas Mavericks was the biggest positive outlier where we predicted 0.531 but achieved 0.610, suggesting they overperformed their stats.
 
----
 
-### Section B — Forecasting W_PCT from Previous Season Stats
+### Section B: Forecasting W_PCT from Previous Season Stats
 
 **Question:** Can historical team stats predict next season's win percentage?
 
-**Approach:**
+Approach:
 
 Rather than using only the previous season's raw stats, the model was enhanced
-with three types of features to capture each team's trajectory more fully:
+with three types of features to capture each team's trajectory better:
 
-- **Last season's raw stats** — PTS, REB, AST, FG_PCT, FG3_PCT, TOV, STL, BLK
-- **Last season's W_PCT** — how good the team was overall last year
-- **3-year rolling averages** — smooths out outlier seasons and captures sustained team quality
-- **Year over year changes** — whether the team is improving or declining heading into next season
+- Last season's raw stats: PTS, REB, AST, FG_PCT, FG3_PCT, TOV, STL, BLK
+- Last season's W_PCT: how good the team was overall last year
+- 3-year rolling averages: smooths out outlier seasons and captures sustained team quality
+- Year over year changes: whether the team is improving or declining heading into next season
 
 This gives the model 25 features in total compared to the 8 used in Section A.
 
@@ -352,14 +341,11 @@ This gives the model 25 features in total compared to the 8 used in Section A.
 | Random Forest | 0.1467 | 0.1679 | 0.1805 |
 | Gradient Boosting | 0.1496 | 0.1345 | 0.1600 |
 
-**Best model: Random Forest**
+Best model: Random Forest
 
-Unlike Section A where Linear Regression won, Random Forest performed best in
-Section B. With 25 features capturing non-linear relationships between a team's
-trajectory and future performance, a tree-based model is better suited to find
-patterns that a linear model cannot.
+Unlike Section A where Linear Regression won, Random Forest performed best in Section B. With 25 features capturing non-linear relationships between a team's trajectory and future performance, a tree-based model is better suited to find patterns that a linear model cannot.
 
-**Feature Importances (top 10):**
+Feature Importances (top 10):
 
 | Feature | Importance |
 |---|---|
@@ -374,30 +360,11 @@ patterns that a linear model cannot.
 | STL | 0.021 |
 | STL_ROLL3 | 0.017 |
 
-The two most important features by a significant margin are last season's win
-percentage (PREV_W_PCT) and field goal percentage (FG_PCT). This suggests that
-how good a team was overall last year, combined with their shooting efficiency,
-are the strongest available signals for predicting next season's success.
-The presence of rolling average features like BLK_ROLL3 and TOV_ROLL3 in the
-top 10 confirms that multi-season trends add meaningful predictive value beyond
-a single season snapshot.
+The two most important features by a significant margin are last season's win percentage (PREV_W_PCT) and field goal percentage (FG_PCT). This suggests that how good a team was overall last year, combined with their shooting efficiency, are the strongest available signals for predicting next season's success. The presence of rolling average features like BLK_ROLL3 and TOV_ROLL3 in the
+top 10 confirms that multi-season trends add meaningful predictive value beyond a single season.
 
-**Comparison to original Section B:**
 
-Adding historical context meaningfully improved the model's performance compared
-to using only last season's raw stats:
-
-| | Original | Enhanced |
-|---|---|---|
-| RMSE | 0.1566 | 0.1467 |
-| R² | 0.0512 | 0.1679 |
-| Best model | Linear Regression | Random Forest |
-
-R² more than tripled from 0.05 to 0.17, demonstrating that a team's historical
-trajectory is a significantly better predictor of future performance than any
-single season's stats alone.
-
-**2023-24 Forecasted vs Actual Win Percentage** *(using 2022-23 stats as input)*:
+**2023-24 Forecasted vs Actual Win Percentage** (using 2022-23 stats as input):
 
 | Team | Conference | Forecasted W_PCT | Actual W_PCT |
 |---|---|---|---|
@@ -432,15 +399,7 @@ single season's stats alone.
 | Houston Rockets | West | 0.437 | 0.500 |
 | Detroit Pistons | East | 0.415 | 0.171 |
 
-Despite the improvement, forecasts remain clustered between 0.41 and 0.59,
-struggling to predict extreme outcomes at either end of the standings. The
-largest misses highlight the fundamental limits of stat-based forecasting —
-Boston was predicted at 0.570 but delivered a historic 0.780 season, Memphis
-collapsed from a predicted 0.577 to just 0.329 following Ja Morant's
-suspension, and Oklahoma City's young roster dramatically outperformed
-expectations at 0.695 against a prediction of 0.532. These outcomes were
-driven by factors completely invisible to any model built on prior season
-statistics alone.
+Despite the improvement, forecasts remain clustered between 0.41 and 0.59, struggling to predict extreme outcomes at either end of the standings. The largest misses highlight the fundamental limits of stat-based forecasting where Boston was predicted at 0.570 but had a historic 0.780 season, Memphis collapsed from a predicted 0.577 to just 0.329, and Oklahoma City's young roster dramatically outperformed expectations at 0.695 against a prediction of 0.532. These outcomes were driven by factors completely invisible to any model built on prior season statistics alone.
 
 
 
