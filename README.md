@@ -9,10 +9,10 @@ Python | pandas | NumPy | Data Analysis | Machine Learning | Sports Analytics
 - [Project Structure](#project-structure)
 - [Dataset Columns](#dataset-columns)
 - [Exploratory Data Analysis](#exploratory-data-analysis)
-- [How to Run the Project](#how-to-run-the-project)
 - [Hypothesis Testing](#hypothesis-testing)
 - [Predictive Modeling](#predictive-modeling)
 - [Final Conclusion](#final-conclusion)
+- [How to Run the Project](#how-to-run-the-project)
 
 
 ## Project Goal
@@ -364,7 +364,7 @@ The two most important features by a significant margin are last season's win pe
 top 10 confirms that multi-season trends add meaningful predictive value beyond a single season.
 
 
-**2023-24 Forecasted vs Actual Win Percentage** (using 2022-23 stats as input):
+**2023-24 Forecasted vs Actual Win Percentage** (using multiple seasons as input):
 
 | Team | Conference | Forecasted W_PCT | Actual W_PCT |
 |---|---|---|---|
@@ -403,6 +403,17 @@ Despite the improvement, forecasts remain clustered between 0.41 and 0.59, strug
 
 
 
+
+## Tools and Libraries
+
+- Python
+- pandas
+- NumPy
+- matplotlib
+- seaborn
+- scikit-learn
+
+
 ## How to Run the Project
 
 Clone the repository:
@@ -422,13 +433,3 @@ Run the exploratory data analysis:
 ```
 python analysis/eda.py
 ```
-
-
-## Tools and Libraries
-
-- Python
-- pandas
-- NumPy
-- matplotlib
-- seaborn
-- scikit-learn
