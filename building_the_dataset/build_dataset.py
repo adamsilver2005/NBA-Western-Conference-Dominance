@@ -1,3 +1,10 @@
+# Filename: build_dataset.py
+# Author: Adam Silver
+# Date: 2026-02-22
+# Description: Cleans and prepares the original Kaggle dataset, adds Season
+#              and Conference columns, and saves the processed dataset.
+
+
 import pandas as pd
 
 
