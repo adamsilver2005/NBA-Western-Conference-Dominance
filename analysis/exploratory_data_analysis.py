@@ -1,8 +1,8 @@
 # Filename: exploratory_data_analysis.py
 # Author: Adam Silver
-# Date: 2026-03-09
-# Description: 
-
+# Date: 2026-03-09 
+# Description: Exploratory data analysis comparing Eastern and Western Conference
+#              team statistics from 1996-97 to 2022-23.
 
 
 # import libraries
