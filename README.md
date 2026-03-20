@@ -2,7 +2,6 @@
 
 Python | pandas | NumPy | Data Analysis | Machine Learning | Sports Analytics
 
-[![GitHub](https://img.shields.io/badge/GitHub-View_Repository-blue?logo=github)](https://github.com/adamsilver2005/nba-western-conference-analysis)
 
 ## Table of Contents
 
