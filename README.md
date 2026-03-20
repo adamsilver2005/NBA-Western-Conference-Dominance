@@ -77,6 +77,7 @@ images/
 
 README.md
 .gitignore
+requirements.txt
 ```
 
 ## Dataset Columns:
