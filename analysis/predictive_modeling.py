@@ -12,6 +12,8 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import cross_val_score
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 
 data = pd.read_csv(
@@ -244,3 +246,77 @@ results_b = results_b.sort_values("Predicted_2324_W_PCT", ascending=False)
 
 print("\n  Predicted vs Actual Win Percentage:")
 print(results_b.to_string(index=False))
+
+
+
+
+# Section B Visualization: Predicted vs Actual W_PCT 
+# horizontal bar chart showing predicted vs actual for each team,
+# colored by conference, sorted by actual W_PCT for easy comparison
+
+# sort by actual W_PCT so the best teams appear at the top
+results_b = results_b.sort_values("Actual_2324_W_PCT", ascending=True)
+
+teams      = results_b["TEAM_NAME"].tolist()
+predicted  = results_b["Predicted_2324_W_PCT"].tolist()
+actual     = results_b["Actual_2324_W_PCT"].tolist()
+conference = results_b["Conference"].tolist()
+
+# y positions for each team
+y = range(len(teams))
+
+fig, ax = plt.subplots(figsize=(12, 11))
+
+# draw a horizontal bar for each team showing predicted (lighter) and actual (darker)
+# east teams are blue, west teams are red
+for i, (pred, act, conf) in enumerate(zip(predicted, actual, conference)):
+    if conf == "West":
+        pred_color = "#f4a582"   # light red for predicted
+        act_color  = "#d6604d"   # dark red for actual
+    else:
+        pred_color = "#92c5de"   # light blue for predicted
+        act_color  = "#4393c3"   # dark blue for actual
+
+    # draw predicted bar (lighter, slightly thinner)
+    ax.barh(i + 0.2, pred, height=0.35, color=pred_color, alpha=0.9)
+
+    # draw actual bar (darker, slightly lower)
+    ax.barh(i - 0.2, act, height=0.35, color=act_color, alpha=0.9)
+
+# team name labels on y axis
+ax.set_yticks(list(y))
+ax.set_yticklabels(teams, fontsize=9)
+
+# labels and title
+ax.set_xlabel("Win Percentage", fontsize=11)
+ax.set_title(
+    "Section B: Forecasted vs Actual 2023-24 Win Percentage\n(using 2022-23 stats as input)",
+    fontsize=13, fontweight="bold", pad=15
+)
+
+# vertical line at 0.5 (winning record threshold)
+ax.axvline(x=0.5, color="gray", linestyle="--", linewidth=0.8, alpha=0.7)
+ax.text(0.502, len(teams) - 0.5, ".500 mark", fontsize=8, color="gray")
+
+# x axis range
+ax.set_xlim(0, 0.95)
+
+# legend
+west_pred_patch  = mpatches.Patch(color="#f4a582", label="West — Forecasted")
+west_act_patch   = mpatches.Patch(color="#d6604d", label="West — Actual")
+east_pred_patch  = mpatches.Patch(color="#92c5de", label="East — Forecasted")
+east_act_patch   = mpatches.Patch(color="#4393c3", label="East — Actual")
+
+ax.legend(
+    handles=[west_act_patch, west_pred_patch, east_act_patch, east_pred_patch],
+    loc="lower right", fontsize=9, framealpha=0.9
+)
+
+plt.tight_layout()
+plt.savefig(
+    "C:/Users/Ilike/OneDrive/Year 3/Personal Projects/Western Conference Dominance"
+    "/images/section_b_predicted_vs_actual.png",
+    dpi=150, bbox_inches="tight"
+)
+plt.show()
+print("Section B visualization saved.")

@@ -1,7 +1,8 @@
 # Filename: hypothesis_testing.py
 # Author: Adam Silver
 # Date: 2026-03-13
-# Description: 
+# Description: Two-sample t-tests comparing Eastern and Western Conference teams
+#              across win percentage, point differential, and other key statistics.
 
 from scipy.stats import ttest_ind
 import pandas as pd
@@ -26,9 +27,8 @@ print(f"T-statistic W_PCT: {t_stat:.5f}, P-value W_PCT: {p_value:.5f}")
 
 # two sample t test based on plus minus
 
-west_plus_minus = data[data["Conference"] == "West"]["PLUS_MINUS"]
-east_plus_minus = data[data["Conference"] == "East"]["PLUS_MINUS"]
-
+west_plus_minus = data[data["Conference"] == "West"]["PLUS_MINUS"].dropna()
+east_plus_minus = data[data["Conference"] == "East"]["PLUS_MINUS"].dropna()
 
 t_stat, p_value = ttest_ind(west_plus_minus, east_plus_minus, alternative='greater')
 
@@ -60,7 +60,7 @@ west_assists = data[data["Conference"] == "West"]["AST"]
 east_assists = data[data["Conference"] == "East"]["AST"]
 
 
-t_stat, p_value = ttest_ind(west_points, east_points, alternative='greater')
+t_stat, p_value = ttest_ind(west_assists, east_assists, alternative='greater')
 
 
 print(f"T-statistic AST: {t_stat:.5f}, P-value AST: {p_value:.6f}")
@@ -75,7 +75,7 @@ west_rebounds = data[data["Conference"] == "West"]["REB"]
 east_rebounds = data[data["Conference"] == "East"]["REB"]
 
 
-t_stat, p_value = ttest_ind(west_points, east_points, alternative='greater')
+t_stat, p_value = ttest_ind(west_rebounds, east_rebounds, alternative='greater')
 
 
 print(f"T-statistic REB: {t_stat:.5f}, P-value REB: {p_value:.6f}")

@@ -21,18 +21,17 @@ For years, NBA fans and analysts have argued that the Western Conference has his
 
 The analysis will include:
 
-- Exploratory Data Analysis (EDA)
-- Statistical comparisons between conferences
-- Visualization of these comparisons over the multiple seasons
-- Predictive modeling of team success
+- Exploratory Data Analysis (EDA) to understand distributions and trends in key statistics between conferences 
+- Statistical hypothesis testing to determine whether observed differences are significant 
+- Two predictive modeling approaches to forecast and explain team win percentages 
 
 
 ## Dataset
 
 The dataset used for this project was sourced from Kaggle: 
-(https://www.kaggle.com/datasets/mamadoudiallo/nba-team-stats?resource=download)
+[NBA Team Stats](https://www.kaggle.com/datasets/mamadoudiallo/nba-team-stats?resource=download)
 
-The original dataset did not include a **Season** or a **Conference** column, so these were added during data preprocessing. 
+The original dataset did not include a **Season** or a **Conference** column, so these were added during data preprocessing. The 2023-24 season was scraped separately and merged in during preprocessing. 
 
 Other preprocessing steps included: 
 
@@ -40,6 +39,8 @@ Other preprocessing steps included:
 - Assigning each team to its **Conference** using a dictionary of team-conference mappings
 - Handling inconsistencies in team names due to franchise name changes
 - Accounting for the NBA expansion from **29 to 30 teams in 2005**
+- Standardized the Los Angeles Clippers name which appeared as both the "LA Clippers" and "Los Angeles Clippers" across different seasons
+- Filled missing rank columns for the 2023-24 season with null values as these were not available in the scraped data and are not used in the analysis
 
 The dataset was preprocessed using **Python and pandas**
 
@@ -51,21 +52,28 @@ The dataset was preprocessed using **Python and pandas**
 nba-western-conference-analysis/
 
 data/
-    raw/                # original Kaggle dataset
-        nba_team_stats.csv
-    processed/          # cleaned dataset used for analysis
-        updated_dataset.csv
+    raw/               
+        nba_team_stats.csv  # original Kaggle dataset
+        nba_2024_scraped_.csv # scraped 2023-24 season
+    processed/         
+        updated_dataset.csv  # cleaned dataset used for analysis
 
 analysis/
     exploratory_data_analysis.py             
     hypothesis_testing.py
     predictive_modeling.py
 
-scripts/
+building_the_dataset/
     build_dataset.py    # script used to clean and prepare dataset
+    building_23_24_dataset.py # script for webscrapping and building the 2023-24 dataset 
 
 images/
-    # visualizations created during analysis
+    correlation_heatmap.png
+    plus_minus_vs_win_pct.png
+    point_differential_distribution.png
+    win_pct_boxplot.png
+    win_pct_trend_over_time.png
+    section_b_predicted_vs_actual.png
 
 README.md
 .gitignore
@@ -231,20 +239,22 @@ This scatter plot shows the relationship between team point differential (PLUS_M
 
 ## Hypothesis Testing
 
-I conducted hypothesis tests to determine whether Western Conference teams outperform Eastern Conference teams. 
-The null hypothesis was there is no difference in statistic being tested between conferences. 
-The alternative hypothesis is that there is a difference in the statistic that we are testing between conferences.
+Two-sample t-tests were conducted to determine whether observed differences between
+conferences are statistically significant.
 
-**Win Percentage (W_PCT):**  
-- T-test results: t = 3.12, p = 0.0001  
-- Conclusion: Western teams have a statistically higher average win percentage than Eastern teams.
+**Null hypothesis:** There is no difference in the statistic being tested between conferences.  
+**Alternative hypothesis:** Western Conference teams perform significantly better than Eastern Conference teams.
 
-**Point Differential (PLUS_MINUS):**  
-- T-test results: t = 3.06, p = 0.001
-- Conclusion: Western teams outscore opponents by larger margins, supporting the claim of Western dominance.
+| Statistic | t-statistic | p-value | Conclusion |
+|-----------|-------------|---------|------------|
+| W_PCT | 3.251 | 0.0006 | Western teams have a significantly higher average win percentage |
+| PLUS_MINUS | 3.059 | 0.0012 | Western teams outscore opponents by significantly larger margins |
+| PTS | 4.536 | 0.000003 | Western teams score significantly more points per game |
+| AST | 4.036 | 0.00003 | Western teams average significantly more assists |
+| REB | 3.531 | 0.0002 | Western teams average significantly more rebounds |
+| FG_PCT | 5.738 | < 0.0001 | Western teams shoot significantly more efficiently |
 
-Other metrics like assists, rebounds, and shooting efficiency were also tested, and all of them showed significant differences in favor of Western Conference dominance. 
-
+All tested metrics showed statistically significant differences in favor of the Western Conference, providing strong evidence that the West has historically been the stronger conference over this time period.
 
 
 ## Predictive Modeling
@@ -275,7 +285,7 @@ Best model: Linear Regression
 
 Linear Regression outperformed both tree-based models across all three metrics. This is expected given the small dataset size of ~800 rows, and that simpler models tend to generalize better when data is limited, and the relationships between team stats and win percentage are largely linear.
 
-The model explains 78% of the variance in win percentage (R² = 0.78) from just 8 team statistics, with an average prediction error of 7.5%. The cross-validated R² of 0.63 confirms the model generalizes well to unseen seasons.
+The model explains 78% of the variance in win percentage (R² = 0.78) from just 8 team statistics, with an average prediction error of 7.5 percentage points. The cross-validated R² of 0.63 confirms the model generalizes well to unseen seasons.
 
 **2023-24 Predicted vs Actual Win Percentage:**
 
@@ -364,6 +374,7 @@ The two most important features by a significant margin are last season's win pe
 top 10 confirms that multi-season trends add meaningful predictive value beyond a single season.
 
 
+
 **2023-24 Forecasted vs Actual Win Percentage** (using multiple seasons as input):
 
 | Team | Conference | Forecasted W_PCT | Actual W_PCT |
@@ -399,37 +410,83 @@ top 10 confirms that multi-season trends add meaningful predictive value beyond 
 | Houston Rockets | West | 0.437 | 0.500 |
 | Detroit Pistons | East | 0.415 | 0.171 |
 
-Despite the improvement, forecasts remain clustered between 0.41 and 0.59, struggling to predict extreme outcomes at either end of the standings. The largest misses highlight the fundamental limits of stat-based forecasting where Boston was predicted at 0.570 but had a historic 0.780 season, Memphis collapsed from a predicted 0.577 to just 0.329, and Oklahoma City's young roster dramatically outperformed expectations at 0.695 against a prediction of 0.532. These outcomes were driven by factors completely invisible to any model built on prior season statistics alone.
 
+### Section B Visualization: Forecasted vs Actual 2023-24 Win Percentage
+
+![Section B Predicted vs Actual](images/section_b_predicted_vs_actual.png)
+
+This chart compares the forecasted and actual win percentages for all 30 NBA teams in the 2023-24 season, using multiple seasons of stats as input. Each team has two bars, where the darker bar shows the actual win percentage and the lighter bar shows the model's
+forecast. Red bars represent Western Conference teams and blue bars represent Eastern Conference teams. Teams are sorted by actual win percentage, with the strongest teams at the top.
+
+The visualization makes the model's key limitation immediately clear, the forecasted bars are tightly clustered between roughly 0.40 and 0.60, while the actual bars span the full range from 0.17 (Detroit) to 0.78 (Boston). The model correctly identifies the general tier of most mid-table teams but consistently fails to predict the extremes in either direction.
+
+The most notable misses are visible:
+
+- Boston Celtics: forecasted at 0.570, actual 0.780. The model had no way of
+  anticipating their historic breakout season
+- Oklahoma City Thunder: forecasted at 0.532, actual 0.695. A young roster
+  that dramatically exceeded expectations
+- Memphis Grizzlies: forecasted at 0.577 based on a strong 2022-23 season,
+  but collapsed to 0.329
+- Washington Wizards and Detroit Pistons: both predicted as average teams
+  but finished as two of the worst teams in the league
+
+The dashed line at 0.500 shows that the model does reasonably well at identifying which teams will finish above or below a winning record, where most teams whose actual bar crosses 0.500 also have a forecasted bar near or above it. However the magnitude
+of success or failure is largely unpredictable from prior season statistics alone, which is reflected in the model's R² of 0.17.
+
+
+
+
+## Final Conclusion
+
+This project set out to investigate whether the Western Conference has historically been stronger than the Eastern Conference, using team statistics from the 1996-97 season through the 2022-23 season. The evidence across all three stages of analysis consistently supports this claim.
+
+The exploratory data analysis revealed that Western Conference teams average a higher win percentage (0.517 vs 0.483), score more points, and maintain a positive average point differential compared to the East's negative average. These differences are visible across multiple metrics and persist across nearly three decades of data. The time-series analysis showed the West maintaining a higher average win percentage in the majority of seasons, with the gap being particularly pronounced during the early 2000s and mid-2010s.
+
+Hypothesis testing confirmed that these observed differences are statistically significant and not due to random chance. Every metric that was tested; win percentage, point differential, assists, rebounds, and shooting efficiency; showed a significant difference in favor of the Western Conference, giving strong statistical backing to what many NBA fans have long argued anecdotally.
+
+The predictive modeling results provided an additional layer of insight into what drives team success. Section A showed that same-season stats can explain 78% of the variance in win percentage using just 8 features, with shooting efficiency (FG_PCT) and scoring (PTS) being the strongest drivers. This is meaningful in the context of the conference comparison where Western teams consistently posted better numbers in exactly these high-impact statistics. Section B showed that forecasting future success is a fundamentally harder problem. Even with an enhanced model incorporating rolling averages, year over year changes, and prior season win percentage, the model only explained 17% of next season's variance. The dramatic misses, including Boston's historic 0.780 season, Memphis collapsing to 0.329, Oklahoma City leaping to 0.695, highlight how much of NBA team performance is shaped by factors outside of historical statistics, such as injuries, roster moves, and player development.
+
+It is worth noting that the Western Conference's dominance does not appear to be permanent. The time-series data shows the Eastern Conference is closing the gap significantly in recent seasons and briefly overtaking the West in the early 2020s. Whether this represents a lasting shift in conference balance or a temporary period of Eastern resurgence remains to be seen, but it suggests that the gap between conferences is smaller today than it was at its peak.
+
+Overall, the data strongly supports the claim that the Western Conference has been the historically stronger conference across the 27 seasons analyzed, but the story is more nuanced than a simple yes or no answer, and the competitive landscape of the NBA continues to evolve.
 
 
 
 ## Tools and Libraries
 
-- Python
-- pandas
-- NumPy
-- matplotlib
-- seaborn
-- scikit-learn
-
+| Library | Purpose |
+|---------|---------|
+| pandas | Data manipulation and preprocessing |
+| NumPy | Numerical operations |
+| matplotlib | Data visualization |
+| seaborn | Statistical visualizations |
+| scikit-learn | Machine learning models and evaluation |
 
 ## How to Run the Project
 
-Clone the repository:
-
+**1. Clone the repository:**
+```bash
+git clone https://github.com/adamsilver2005/nba-western-conference-analysis.git
+cd nba-western-conference-analysis
 ```
-git clone https://github.com/YOUR_USERNAME/nba-western-conference-analysis.git
-```
 
-Install dependencies:
-
-```
+**2. Install dependencies:**
+```bash
 pip install -r requirements.txt
 ```
 
-Run the exploratory data analysis:
+**3. Build the dataset:**
+```bash
+python building_the_dataset/build_dataset.py
+python building_the_dataset/building_23_24_dataset.py
+```
 
+**4. Run the analysis scripts:**
+```bash
+python analysis/exploratory_data_analysis.py
+python analysis/hypothesis_testing.py
+python analysis/predictive_modeling.py
 ```
-python analysis/eda.py
-```
+
+Note: The dataset building scripts in step 3 only need to be run once. After `updated_dataset.csv` has been created in `data/processed/`, you can run the analysis scripts directly without rebuilding the dataset.
