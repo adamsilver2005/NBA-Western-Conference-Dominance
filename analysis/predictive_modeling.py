@@ -6,6 +6,12 @@
 #              Forecast W_PCT from previous season's stats (season N -> N+1), enhanced with rolling averages, 
 #              YoY changes, and previous W_PCT
 
+
+# sklearn is the machine learning library
+# numpy is for numerical operations 
+# pandas is for loading and manipulating the dataset as a dataframe 
+# matplotlib.pyplot is for creating the chart
+# matplotlib.patches is for creating the coloured legend boxes in the chart
 from sklearn.linear_model import LinearRegression
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error, r2_score
@@ -27,7 +33,7 @@ data["TEAM_NAME"] = data["TEAM_NAME"].replace("LA Clippers", "Los Angeles Clippe
 
 
 # features used in both sections
-# PLUS_MINUS excluded — 0.97 correlation with W_PCT would be data leakage
+# PLUS_MINUS excluded: 0.97 correlation with W_PCT would be data leakage
 FEATURES = [
     "PTS",
     "REB",
@@ -50,19 +56,33 @@ print("SECTION A: Explaining W_PCT from Same-Season Stats")
 
 
 # split into train and test sets
+# training is everything but the 2024 season
 train_a = data[data["Season"] != 2024]
+# test is 2024 season
 test_a  = data[data["Season"] == 2024]
 
+# explanatory variables 
 X_train_a = train_a[FEATURES]
+
+# response
 y_train_a  = train_a["W_PCT"]
+
+# explanatory variables 
 X_test_a   = test_a[FEATURES]
+
+# response 
 y_test_a   = test_a["W_PCT"]
 
 # define the three models to compare
 lr_a  = LinearRegression()
+
+# 100 trees, depth is 4, and random_state is the random seed 
 rf_a  = RandomForestRegressor(n_estimators=100, max_depth=4, random_state=42)
+
+# 100 trees, depth is 3, learning rate is 0.05, and random_state is random seed
 gb_a  = GradientBoostingRegressor(n_estimators=100, max_depth=3, learning_rate=0.05, random_state=42)
 
+# stores the three models in a dictionary 
 models_a = {
     "Linear Regression": lr_a,
     "Random Forest":     rf_a,
@@ -70,18 +90,29 @@ models_a = {
 }
 
 # train each model, then calculate RMSE, R², and cross-validated R²
+
+# set the best mspe value to be positive infinity (to start)
 best_rmse_a  = float("inf")
+# best model is none so far
 best_model_a = None
+# best model name is nothing so far
 best_name_a  = ""
 
+# loops through the entire dictionary (models_a), so iteration 1: name = linear regression, model = lr_a
 for name, model in models_a.items():
+
+    # iteration1: lr_a.fit(explanatory variables, response)
     model.fit(X_train_a, y_train_a)
+
+    # predictions predict(explanatory variables)
     preds = model.predict(X_test_a)
 
+    # rmse calculation y - y_hat
     rmse = np.sqrt(mean_squared_error(y_test_a, preds))
+    # r^2 score 
     r2   = r2_score(y_test_a, preds)
 
-    
+    # cross validation r^2 score
     cv_r2 = cross_val_score(model, X_train_a, y_train_a, cv=10, scoring="r2").mean()
 
     print(f"\n  {name}")
@@ -101,8 +132,13 @@ print(f"\n  Best model: {best_name_a}")
 best_model_a.fit(X_train_a, y_train_a)
 
 # print feature importances if the best model is a tree-based model
+# hasattr is bascially if the dictionary or object has that attribute, so if the model that was chosen as best
+# has feature importances, then we want to print those features 
 if hasattr(best_model_a, "feature_importances_"):
+    # holds the feature importances
     importances = pd.Series(best_model_a.feature_importances_, index=FEATURES)
+
+    # print them out in descending order 
     print("\n  Feature Importances:")
     print(importances.sort_values(ascending=False).to_string())
 
@@ -133,8 +169,7 @@ print(results_a.to_string(index=False))
 #   3. Year over year change in each stat
 #
 # Train: all lagged season pairs up to 2021-22 → 2022-23
-# Test:  2022-23 stats used to forecast 2023-24 W_PCT
-# ═══════════════════════════════════════════════════════════════════════════════
+# Test: 2022-23 stats used to forecast 2023-24 W_PCT
 
 print("SECTION B: Forecasting W_PCT from Previous Season Stats")
 
