@@ -178,12 +178,17 @@ data_b = data.sort_values(["TEAM_NAME", "Season"]).copy()
 
 
 # last season's W_PCT as a feature: 
-# a strong prior teams that won a lot last year tend to win more this year
+# strong prior teams that won a lot last year tend to win more this year
+# create a new column containing each teams win percentage from last season
+# shift(1) moves each value down one row, so the 2022-23 win percentage appears on 
+# the 2023-24 row (last seasons win percentage), the first season for each team is NAN 
+# since there is no prior win percentage (technically)
 data_b["PREV_W_PCT"] = data_b.groupby("TEAM_NAME")["W_PCT"].shift(1)
 
 # 3 year rolling averages for each stat:
 # smooths out outlier seasons and captures sustained team quality
 # min_periods=1 means teams with fewer than 3 seasons still get a value
+# for every feature, we want to create a rolling average (3 years)
 for stat in FEATURES:
     data_b[f"{stat}_ROLL3"] = (
         data_b.groupby("TEAM_NAME")[stat]
@@ -215,10 +220,14 @@ data_b["NEXT_W_PCT"] = data_b.groupby("TEAM_NAME")["W_PCT"].shift(-1)
 data_b = data_b.dropna(subset=FEATURES_B + ["NEXT_W_PCT"])
 
 # 2022-23 rows pair with 2023-24 W_PCT, so use them as the test set
+# train set is everything but 2023-24 season
 train_b = data_b[data_b["Season"] != 2023]
+# test set is 2023-24 season
 test_b  = data_b[data_b["Season"] == 2023]
 
+# train is the explanatory variables 
 X_train_b = train_b[FEATURES_B]
+# response for train is the next win percentage 
 y_train_b  = train_b["NEXT_W_PCT"]
 X_test_b   = test_b[FEATURES_B]
 y_test_b   = test_b["NEXT_W_PCT"]
